@@ -4,14 +4,16 @@ a simple program to run a script before and after sleep. note that the locks are
 blocking, so make sure your script finishes!
 
 ```
-usage: systemd-sleep-hook [-h] [-s SLEEP] [-r RESUME]
+usage: systemd-sleep-hook [-h] [-s SLEEP_COMMAND] [-r RESUME_COMMAND]
 
 run command on systemd sleep/resume
 
 options:
   -h, --help            show this help message and exit
-  -s SLEEP, --sleep SLEEP
-  -r RESUME, --resume RESUME
+  -s SLEEP_COMMAND, --sleep SLEEP_COMMAND
+                        command to run before sleep
+  -r RESUME_COMMAND, --resume RESUME_COMMAND
+                        command to run on resume
 ```
 
 ## Installation

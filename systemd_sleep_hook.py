@@ -51,10 +51,10 @@ class SystemdSleepHook:
 
 def main():
     parser = argparse.ArgumentParser(
-            prog="systemd-sleep-hook",
+            prog=PROG_NAME,
             description="run command on systemd sleep/resume")
-    parser.add_argument('-s', '--sleep')
-    parser.add_argument('-r', '--resume')
+    parser.add_argument('-s', '--sleep', metavar="SLEEP_COMMAND", help="command to run before sleep")
+    parser.add_argument('-r', '--resume', metavar="RESUME_COMMAND", help="command to run on resume")
 
     args = parser.parse_args()
     logging.basicConfig(
