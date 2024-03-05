@@ -1,0 +1,10 @@
+[project]
+name = "systemd-sleep-hook"
+version = "0.0.1"
+dependencies = [
+    "dbus-python",
+    "pygobject",
+]
+
+[project.scripts]
+systemd-sleep-hook = "systemd_sleep_hook:main"
