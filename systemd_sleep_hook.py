@@ -57,7 +57,9 @@ def main():
     parser.add_argument('-r', '--resume')
 
     args = parser.parse_args()
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(
+        level=os.environ.get('LOGLEVEL', 'INFO').upper()
+    )
 
     DBusGMainLoop(set_as_default=True)
     sleep_hook = SystemdSleepHook(args.sleep, args.resume)
