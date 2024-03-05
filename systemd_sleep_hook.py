@@ -15,6 +15,7 @@ class SystemdSleepHook:
     def __init__(self, sleep, resume):
         self.sleep = sleep
         self.resume = resume
+        self.sleep_lock = -1
 
     def init_listeners(self):
         bus = dbus.SystemBus()
@@ -26,21 +27,27 @@ class SystemdSleepHook:
     def start_inhibit(self):
         if self.sleep is None:
             return
+        if self.sleep_lock > 0:
+            # shouldn't happen, but just in case we do _not_ want to have
+            # multiple fd's open since that means we are dangling locks!
+            return
 
         bus = dbus.SystemBus()
+
         login = bus.get_object(LOGIND_SERVICE, LOGIND_PATH)
         pm = dbus.Interface(login, LOGIND_INTERFACE)
         self.sleep_lock = pm.Inhibit("sleep", PROG_NAME, f"running {self.sleep} as hook before sleep", "block").take()
-        logging.info("grabbed inhibit")
+        logging.info("opened sleep inhibitor")
 
     def wait_for_sleep(self, active):
         if active:
-            logging.info("received PrepareForSleep; releasing inhibitor")
+            logging.info("received PrepareForSleep; closing sleep inhibitor")
             os.system(self.sleep)
             os.close(self.sleep_lock)
+            self.sleep_lock = -1
             logging.info("closed sleep inhibitor")
         else:
-            logging.info("received PrepareForSleep; resuming inhibitor")
+            logging.info("received PrepareForSleep; opening sleep inhibitor")
             self.start_inhibit()
             if self.resume:
                 os.system(self.resume)
