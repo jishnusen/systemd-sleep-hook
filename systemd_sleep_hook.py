@@ -5,7 +5,6 @@ from dbus.mainloop.glib import DBusGMainLoop
 import logging
 import argparse
 import os
-import fcntl
 
 PROG_NAME = "systemd-sleep-hook"
 LOGIND_SERVICE = "org.freedesktop.login1"
@@ -32,8 +31,6 @@ class SystemdSleepHook:
         login = bus.get_object(LOGIND_SERVICE, LOGIND_PATH)
         pm = dbus.Interface(login, LOGIND_INTERFACE)
         self.sleep_lock = pm.Inhibit("sleep", PROG_NAME, f"running {self.sleep} as hook before sleep", "block").take()
-        flags = fcntl.fcntl(self.sleep_lock, fcntl.F_GETFD)
-        fcntl.fcntl(self.sleep_lock, fcntl.F_SETFD, flags | fcntl.FD_CLOEXEC)
         logging.info("grabbed inhibit")
 
     def wait_for_sleep(self, active):
