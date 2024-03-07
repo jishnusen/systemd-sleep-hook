@@ -1,6 +1,6 @@
 [project]
 name = "systemd-sleep-hook"
-version = "0.0.2"
+version = "0.0.3"
 dependencies = [
     "dbus-python",
     "pygobject",

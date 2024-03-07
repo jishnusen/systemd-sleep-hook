@@ -42,15 +42,18 @@ class SystemdSleepHook:
     def wait_for_sleep(self, active):
         if active:
             logging.info("received PrepareForSleep; closing sleep inhibitor")
-            os.system(self.sleep)
+            if os.system(self.sleep) != 0:
+                logging.warn(f"sleep command {self.sleep} returned non-zero exit code")
             os.close(self.sleep_lock)
             self.sleep_lock = -1
             logging.info("closed sleep inhibitor")
         else:
             logging.info("received PrepareForSleep; opening sleep inhibitor")
             self.start_inhibit()
-            if self.resume:
-                os.system(self.resume)
+            if self.resume is None:
+                return
+            if os.system(self.resume) != 0:
+                logging.warn(f"resume command {self.resume} returned non-zero exit code")
 
 
 def main():
